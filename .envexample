@@ -1,0 +1,7 @@
+# ===== 大模型配置（OpenAI 兼容接口，可填 DeepSeek / Qwen / OpenAI 等）===== # 使用方法：复制本文件为 .env，再填入真实值 #   PowerShell:  Copy-Item .envexample .env OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENAI_BASE_URL=https://api.deepseek.com
+MODEL_NAME=deepseek-flash 
+
+EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2 
+# ===== Embedding 模型（本地 sentence-transformers，首次运行自动下载）
+# ===== 以下为可选配置，本地开发无需填写，部署时按需启用 ===== # SQLite 数据库路径（默认 schedule.db） # SQLITE_DB_PATH=schedule.db # 知识库候选文档目录（默认 data/documents） # DOCUMENTS_DIR=data/documents # FAISS 向量索引目录（默认 faiss_index） # FAISS_DIR=faiss_index # 容器监听端口（默认 80；本地开发用 8000） # PORT=80 # HuggingFace 国内镜像与软链接开关（加速模型下载） # HF_ENDPOINT=https://hf-mirror.com # HF_HUB_DISABLE_SYMLINKS=1
