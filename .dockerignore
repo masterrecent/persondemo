@@ -1,0 +1,23 @@
+.git
+.gitignore
+.idea
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# 密钥与本地配置：严禁打进镜像，改由云托管「环境变量」注入
+.env
+
+# 本地虚拟环境
+.venv
+venv
+env
+
+# 本地开发产生的数据，不打进镜像（云托管上用 CFS 持久化）
+schedule.db
+faiss_index/
+
+# 文档与草稿
+*.log

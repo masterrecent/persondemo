@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173f35">
+  <title>知序 - 个人学习与生活助理</title>
+  <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="主导航">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">知</div>
+        <div><strong>知序</strong><span>个人学习与生活助理</span></div>
+      </div>
+      <button class="new-chat-btn" id="newChatBtn" type="button">
+        <i data-lucide="plus" aria-hidden="true">＋</i><span>开始新对话</span>
+      </button>
+      <nav class="primary-nav" aria-label="工作台导航">
+        <p class="nav-label">工作台</p>
+        <button class="nav-item active" type="button" data-nav="chat">
+          <i data-lucide="message-circle" aria-hidden="true">●</i><span>AI 助理</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="plan">
+          <i data-lucide="map" aria-hidden="true">◇</i><span>完整学习计划</span><span class="nav-count" id="planProgressNav">0</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="today">
+          <i data-lucide="calendar-check-2" aria-hidden="true">□</i><span>今日安排</span><span class="nav-count" id="taskCount">0</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="courses">
+          <i data-lucide="calendar-days" aria-hidden="true">▦</i><span>我的课表</span><span class="nav-count" id="courseCount">0</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="focus">
+          <i data-lucide="timer" aria-hidden="true">◷</i><span>专注计时</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="stats">
+          <i data-lucide="chart-no-axes-column-increasing" aria-hidden="true">▥</i><span>学习数据</span>
+        </button>
+        <button class="nav-item" type="button" data-nav="knowledge">
+          <i data-lucide="library" aria-hidden="true">▤</i><span>我的知识库</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="agent-state"><span class="status-dot" aria-hidden="true"></span><div><strong>智能助理已就绪</strong><span>规划 · 日程 · 知识库</span></div></div>
+      </div>
+    </aside>
+
+    <div class="scrim" id="scrim" hidden></div>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="topbar-title">
+          <button class="icon-btn mobile-only" id="menuBtn" type="button" aria-label="打开菜单" title="打开菜单"><i data-lucide="menu" aria-hidden="true">☰</i></button>
+          <div><strong id="topbarHeading">AI 助理</strong><span id="topbarSubtitle">把想法变成今天可以完成的行动</span></div>
+        </div>
+        <div class="topbar-actions">
+          <div class="date-chip"><i data-lucide="calendar-days" aria-hidden="true">□</i><span id="currentDate">今天</span></div>
+          <button class="icon-btn" id="clearBtn" type="button" aria-label="清空对话" title="清空对话"><i data-lucide="trash-2" aria-hidden="true">×</i></button>
+        </div>
+      </header>
+
+      <section class="conversation" id="chat" data-view="chat" aria-live="polite">
+        <div class="welcome" id="emptyState">
+          <div class="welcome-kicker"><span></span> 今天，从一件重要的事开始</div>
+          <h1 id="greeting">你好，今天想推进什么？</h1>
+          <p>先选择一个常用入口，或直接在下方对话中提问。知识库会自动参与每一次知识问答。</p>
+          <div class="starter-grid">
+            <button class="starter" type="button" data-fill-prompt="请根据我的目标和可用时间制定一份学习计划：">
+              <span class="starter-icon green"><i data-lucide="map" aria-hidden="true">◇</i></span><span><strong>制定学习计划</strong><small>补充目标与时间后发送</small></span><i class="starter-arrow" data-lucide="arrow-up-right" aria-hidden="true">↗</i>
+            </button>
+            <button class="starter" type="button" data-prompt="请整理我今天的全部学习任务，按优先级给出执行顺序和时间建议">
+              <span class="starter-icon amber"><i data-lucide="list-todo" aria-hidden="true">≡</i></span><span><strong>整理今日计划</strong><small>汇总任务并安排执行顺序</small></span><i class="starter-arrow" data-lucide="arrow-up-right" aria-hidden="true">↗</i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div class="composer-area" data-view="chat">
+        <form class="composer" id="composer">
+          <button class="composer-icon" id="attachBtn" type="button" aria-label="上传资料" title="上传资料"><i data-lucide="paperclip" aria-hidden="true">＋</i></button>
+          <textarea id="input" rows="1" maxlength="2000" placeholder="告诉知序你想学习、规划或查询什么…" aria-label="输入消息"></textarea>
+          <button class="send-btn" id="sendBtn" type="submit" aria-label="发送消息" title="发送消息"><i data-lucide="arrow-up" aria-hidden="true">↑</i></button>
+        </form>
+        <p class="composer-note">Enter 发送 · Shift + Enter 换行</p>
+      </div>
+
+      <section class="today-view" id="todayView" data-view="today" hidden>
+        <div class="today-view-inner">
+          <header class="today-hero">
+            <div><span class="eyebrow">TODAY</span><h1>今日安排</h1><p id="todayDateLabel">集中完成今天来自不同学习计划的任务</p></div>
+            <button class="secondary-btn action-btn" id="viewPlanBtn" type="button"><i data-lucide="map" aria-hidden="true">◇</i><span>查看完整计划</span></button>
+          </header>
+          <div class="today-summary">
+            <div><strong id="taskTotal">0 项</strong><span>今日任务</span></div>
+            <div><strong id="todayCompleted">0 项</strong><span>已经完成</span></div>
+            <div class="today-progress-copy"><strong id="todayProgress">0%</strong><span>今日完成率</span></div>
+          </div>
+          <div class="plan-meta today-plan-meta" id="planMeta"></div>
+          <div class="today-empty" id="todayEmpty" hidden>
+            <span class="empty-icon"><i data-lucide="calendar-check-2" aria-hidden="true">□</i></span>
+            <h2>今天没有安排</h2>
+            <p>你可以休息复盘，或者让 AI 为新的学习目标制定计划。</p>
+          </div>
+          <div class="today-task-groups" id="todayList" aria-live="polite"></div>
+          <section class="checkin-section" id="checkinSection">
+            <header class="checkin-heading">
+              <div><span class="eyebrow">CHECK IN</span><h2>学习签到</h2><p id="checkinStatus">完成全部今日任务后即可签到</p></div>
+              <div class="streak-badge"><strong id="streakCount">0</strong><span>连续天数</span></div>
+            </header>
+            <div class="calendar-toolbar">
+              <button class="icon-btn" id="prevMonthBtn" type="button" aria-label="上个月" title="上个月"><i data-lucide="chevron-left" aria-hidden="true">‹</i></button>
+              <strong id="calendarMonth">本月</strong>
+              <button class="icon-btn" id="nextMonthBtn" type="button" aria-label="下个月" title="下个月"><i data-lucide="chevron-right" aria-hidden="true">›</i></button>
+            </div>
+            <div class="calendar-weekdays" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+            <div class="checkin-calendar" id="checkinCalendar" aria-label="学习签到日历"></div>
+            <button class="confirm-btn checkin-btn" id="checkinBtn" type="button" disabled><i data-lucide="badge-check" aria-hidden="true">✓</i><span>完成全部任务后签到</span></button>
+          </section>
+        </div>
+      </section>
+
+      <section class="course-view" id="courseView" data-view="courses" hidden>
+        <div class="course-view-inner">
+          <header class="course-hero">
+            <div><span class="eyebrow">TIMETABLE</span><h1>我的课表</h1><p>通过订阅链接、ICS 文件或手动添加，把每周课程安排放进同一个视图。</p></div>
+            <div class="course-count"><strong id="courseTotal">0</strong><span>节每周课程</span></div>
+          </header>
+
+          <section class="course-import" aria-labelledby="courseImportTitle">
+            <div class="course-import-heading">
+              <div><strong id="courseImportTitle">导入课表</strong><span id="courseImportStatus">支持学校教务系统的 iCalendar 订阅链接或 .ics 文件</span></div>
+              <div class="course-import-actions">
+                <button class="secondary-btn action-btn" id="uploadCourseFileBtn" type="button"><i data-lucide="upload-cloud" aria-hidden="true">↑</i><span>上传 .ics</span></button>
+                <input type="file" id="courseFileInput" accept=".ics,text/calendar" hidden>
+                <button class="secondary-btn action-btn" id="toggleCourseFormBtn" type="button"><i data-lucide="plus" aria-hidden="true">＋</i><span>手动添加</span></button>
+                <button class="secondary-btn action-btn danger-btn" id="clearCoursesBtn" type="button"><i data-lucide="trash-2" aria-hidden="true">×</i><span>清空课表</span></button>
+              </div>
+            </div>
+            <div class="course-url-row">
+              <input id="courseUrlInput" type="url" maxlength="500" placeholder="粘贴课表订阅链接（http(s):// 或 webcal:// 的 .ics 地址）" aria-label="课表订阅链接">
+              <button class="confirm-btn" id="importCourseUrlBtn" type="button"><i data-lucide="link" aria-hidden="true">↗</i><span>从链接导入</span></button>
+            </div>
+            <form class="course-form" id="courseForm" hidden>
+              <input id="courseNameInput" maxlength="60" placeholder="课程名称（必填）" required aria-label="课程名称">
+              <select id="courseDayInput" aria-label="星期">
+                <option value="1">周一</option><option value="2">周二</option><option value="3">周三</option>
+                <option value="4">周四</option><option value="5">周五</option><option value="6">周六</option>
+                <option value="7">周日</option>
+              </select>
+              <input id="courseStartInput" type="time" required aria-label="开始时间">
+              <input id="courseEndInput" type="time" required aria-label="结束时间">
+              <input id="courseLocationInput" maxlength="60" placeholder="地点（可选）" aria-label="上课地点">
+              <input id="courseTeacherInput" maxlength="30" placeholder="教师（可选）" aria-label="任课教师">
+              <input id="courseWeeksInput" maxlength="30" placeholder="周次，如 1-16周（可选）" aria-label="周次说明">
+              <button class="confirm-btn" type="submit"><i data-lucide="check" aria-hidden="true">✓</i><span>保存课程</span></button>
+            </form>
+          </section>
+
+          <div class="course-empty" id="courseEmpty" hidden>
+            <span class="empty-icon"><i data-lucide="calendar-days" aria-hidden="true">▦</i></span>
+            <h2>课表还是空的</h2>
+            <p>粘贴教务系统的课表订阅链接，或上传 .ics 文件；也可以手动逐节添加。</p>
+          </div>
+
+          <div class="course-grid-wrap" id="courseGridWrap" hidden>
+            <div class="course-grid-header" id="courseGridHeader"></div>
+            <div class="course-grid-body" id="courseGridBody"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="focus-view" id="focusView" data-view="focus" hidden>
+        <div class="focus-view-inner">
+          <header class="focus-hero">
+            <div><span class="eyebrow">FOCUS</span><h1>专注计时</h1><p>选择节奏，保持一次只做一件事。</p></div>
+            <div class="focus-today"><strong id="focusTodayMinutes">0</strong><span>今日专注分钟</span></div>
+          </header>
+          <div class="focus-layout">
+            <div class="focus-timer-panel">
+          <div class="focus-modes" id="focusModes" role="group" aria-label="计时模式">
+            <button class="active" type="button" data-focus-minutes="25" data-focus-mode="focus">专注 25 分钟</button>
+            <button type="button" data-focus-minutes="50" data-focus-mode="focus">深度 50 分钟</button>
+            <button type="button" data-focus-minutes="5" data-focus-mode="break">休息 5 分钟</button>
+          </div>
+          <div class="custom-time-control">
+            <label for="customMinutesInput"><span>自定义专注</span><small>1–480 分钟</small></label>
+            <div class="custom-time-input">
+              <input id="customMinutesInput" type="number" min="1" max="480" step="1" inputmode="numeric" placeholder="例如 40" aria-label="自定义专注分钟数">
+              <span>分钟</span>
+            </div>
+            <button class="secondary-btn action-btn" id="applyCustomTimeBtn" type="button"><i data-lucide="check" aria-hidden="true">✓</i><span>应用</span></button>
+            <p id="customTimeHint">当前使用 25 分钟专注</p>
+          </div>
+          <div class="timer-stage">
+            <div class="timer-ring" id="timerRing">
+              <div class="timer-face"><span id="timerModeLabel">专注时间</span><strong id="timerDisplay">25:00</strong><small id="timerStateLabel">准备开始</small></div>
+            </div>
+          </div>
+          <label class="focus-task-label" for="focusTaskInput">本次专注事项</label>
+          <input class="focus-task-input" id="focusTaskInput" maxlength="200" placeholder="例如：完成 LangGraph 第 2 天任务">
+          <div class="timer-controls">
+            <button class="confirm-btn timer-primary" id="timerStartBtn" type="button"><i data-lucide="play" aria-hidden="true">▶</i><span>开始专注</span></button>
+            <button class="secondary-btn action-btn" id="timerPauseBtn" type="button" disabled><i data-lucide="pause" aria-hidden="true">Ⅱ</i><span>暂停</span></button>
+            <button class="secondary-btn action-btn" id="timerFinishBtn" type="button" disabled><i data-lucide="square" aria-hidden="true">■</i><span>结束并记录</span></button>
+            <button class="icon-btn" id="timerResetBtn" type="button" aria-label="重置计时" title="重置计时"><i data-lucide="rotate-ccw" aria-hidden="true">↺</i></button>
+          </div>
+          <p class="timer-note">专注满 1 分钟后可提前结束并计入学习数据。</p>
+            </div>
+            <aside class="focus-history-panel" aria-labelledby="focusHistoryTitle">
+              <header class="focus-history-heading">
+                <div><span class="eyebrow">HISTORY</span><h2 id="focusHistoryTitle">最近专注</h2><p id="focusHistorySummary">还没有专注记录</p></div>
+                <button class="icon-btn" id="refreshFocusHistoryBtn" type="button" aria-label="刷新专注记录" title="刷新专注记录"><i data-lucide="refresh-cw" aria-hidden="true">↻</i></button>
+              </header>
+              <div class="focus-history-empty" id="focusHistoryEmpty">
+                <span><i data-lucide="history" aria-hidden="true">◷</i></span>
+                <strong>完成一次专注后会显示在这里</strong>
+                <p>填写专注事项，可以让每次记录更容易回顾。</p>
+              </div>
+              <ol class="focus-history-list" id="focusHistoryList" aria-live="polite"></ol>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-view" id="statsView" data-view="stats" hidden>
+        <div class="stats-view-inner">
+          <header class="stats-hero">
+            <div><span class="eyebrow">INSIGHTS</span><h1>学习数据</h1><p>用持续积累的数据了解自己的学习节奏。</p></div>
+            <button class="secondary-btn action-btn" id="refreshStatsBtn" type="button"><i data-lucide="refresh-cw" aria-hidden="true">↻</i><span>刷新数据</span></button>
+          </header>
+          <div class="metric-grid">
+            <article class="metric-card"><span class="metric-icon green"><i data-lucide="clock-3" aria-hidden="true">◷</i></span><div><strong id="statTodayFocus">0 分钟</strong><span>今日专注</span></div></article>
+            <article class="metric-card"><span class="metric-icon amber"><i data-lucide="calendar-range" aria-hidden="true">□</i></span><div><strong id="statWeekFocus">0 分钟</strong><span>近 7 天专注</span></div></article>
+            <article class="metric-card"><span class="metric-icon coral"><i data-lucide="circle-check-big" aria-hidden="true">✓</i></span><div><strong id="statCompletion">0%</strong><span>任务完成率</span></div></article>
+            <article class="metric-card"><span class="metric-icon green"><i data-lucide="flame" aria-hidden="true">◇</i></span><div><strong id="statStreak">0 天</strong><span>连续签到</span></div></article>
+          </div>
+          <section class="stats-section">
+            <div class="stats-section-heading"><div><span class="eyebrow">LAST 7 DAYS</span><h2>专注趋势</h2></div><strong id="statTotalSessions">0 次专注</strong></div>
+            <div class="focus-chart" id="focusChart" aria-label="近 7 天专注时长柱状图"></div>
+          </section>
+          <section class="stats-section stats-summary-section">
+            <div class="stats-section-heading"><div><span class="eyebrow">SUMMARY</span><h2>学习积累</h2></div></div>
+            <dl class="learning-summary">
+              <div><dt id="statTotalFocus">0 小时</dt><dd>累计专注</dd></div>
+              <div><dt id="statCompletedTasks">0</dt><dd>完成任务</dd></div>
+              <div><dt id="statAverageRating">0.0</dt><dd>平均自评</dd></div>
+              <div><dt id="statPlanCount">0</dt><dd>学习计划</dd></div>
+            </dl>
+          </section>
+        </div>
+      </section>
+
+      <section class="knowledge-view" id="knowledgeView" data-view="knowledge" hidden>
+        <div class="knowledge-view-inner">
+          <header class="knowledge-hero">
+            <div><span class="eyebrow">LIBRARY</span><h1>我的知识库</h1><p>管理用于知识问答的个人资料，文档变更后会同步更新向量索引。</p></div>
+            <div class="knowledge-count"><strong id="docTotal">0</strong><span>份文档</span></div>
+          </header>
+          <label class="knowledge-uploader" id="uploader">
+            <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md" hidden>
+            <span class="knowledge-upload-icon"><i data-lucide="upload-cloud" aria-hidden="true">↑</i></span>
+            <span><strong>上传或覆盖文档</strong><small>点击选择，或将 PDF、TXT、MD 文件拖到这里</small></span>
+          </label>
+          <section class="knowledge-list-section">
+            <div class="knowledge-toolbar">
+              <div><strong>可导入文档</strong><span id="availableKnowledgeStatus">上传的文档不会自动进入知识库</span></div>
+            </div>
+            <div class="knowledge-empty compact" id="availableKnowledgeEmpty" hidden>
+              <p>暂无等待导入的文档。</p>
+            </div>
+            <ul class="knowledge-doc-list" id="availableDocList" aria-label="可导入文档"></ul>
+          </section>
+          <section class="knowledge-list-section imported-section">
+            <div class="knowledge-toolbar">
+              <div><strong>已导入文档</strong><span id="knowledgeStatus">只有这里的文档会参与知识问答</span></div>
+              <div class="knowledge-actions">
+                <button class="secondary-btn action-btn" id="reindexBtn" type="button"><i data-lucide="refresh-cw" aria-hidden="true">↻</i><span>重建已导入索引</span></button>
+                <button class="secondary-btn action-btn danger-btn" id="clearKnowledgeBtn" type="button"><i data-lucide="archive-restore" aria-hidden="true">×</i><span>清空已导入</span></button>
+              </div>
+            </div>
+            <div class="knowledge-empty compact" id="knowledgeEmpty" hidden>
+              <span class="empty-icon"><i data-lucide="library" aria-hidden="true">▤</i></span>
+              <h2>知识库还是空的</h2><p>从上方可导入文档中选择资料后，AI 才会使用它回答问题。</p>
+            </div>
+            <ul class="knowledge-doc-list" id="docList" aria-label="已导入文档"></ul>
+          </section>
+        </div>
+      </section>
+
+      <section class="plan-view" id="planView" data-view="plan" hidden>
+        <div class="plan-view-inner">
+          <header class="plan-hero">
+            <div>
+              <span class="eyebrow">LEARNING PLAN</span>
+              <h1 id="planGoal">全部学习计划</h1>
+              <p id="planPeriod">按计划、周和每日任务分级浏览</p>
+            </div>
+            <div class="plan-actions">
+              <button class="secondary-btn action-btn" id="exportPlanBtn" type="button"><i data-lucide="download" aria-hidden="true">↓</i><span>导出 Markdown</span></button>
+              <button class="secondary-btn action-btn" id="printPlanBtn" type="button"><i data-lucide="printer" aria-hidden="true">▣</i><span>打印</span></button>
+            </div>
+          </header>
+
+          <div class="progress-overview" id="planOverview">
+            <div class="progress-copy"><strong id="planProgressText">0%</strong><span>计划完成度</span></div>
+            <div class="progress-track" aria-label="计划完成进度"><span id="planProgressBar"></span></div>
+            <dl class="plan-stats">
+              <div><dt id="completedStat">0</dt><dd>已完成</dd></div>
+              <div><dt id="taskStat">0</dt><dd>全部任务</dd></div>
+              <div><dt id="dayStat">0</dt><dd>学习计划</dd></div>
+              <div><dt id="currentDayStat">0</dt><dd>进行中</dd></div>
+            </dl>
+          </div>
+
+          <div class="plan-empty" id="planEmpty" hidden>
+            <span class="empty-icon"><i data-lucide="calendar-plus" aria-hidden="true">＋</i></span>
+            <h2>还没有学习计划</h2>
+            <p>告诉 AI 你的目标和时间，它会帮你拆解成每天可以完成的行动。</p>
+            <button class="new-chat-btn inline-new-plan" type="button" data-plan-chat>去制定计划</button>
+          </div>
+          <div class="plan-timeline" id="planTimeline" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="review-dialog" id="reviewDialog">
+    <form class="review-form" id="reviewForm">
+      <div class="dialog-heading">
+        <div><span class="eyebrow">COMPLETE</span><h2>确认完成并评价</h2></div>
+        <button class="icon-btn" id="closeReviewBtn" type="button" aria-label="关闭评价" title="关闭评价"><i data-lucide="x" aria-hidden="true">×</i></button>
+      </div>
+      <p class="review-task-name" id="reviewTaskName"></p>
+      <fieldset class="rating-field">
+        <legend>这次学习完成得怎么样？</legend>
+        <div class="rating-buttons" id="ratingButtons" aria-label="完成评分">
+          <button type="button" data-rating="1" aria-label="1 分"><i data-lucide="star" aria-hidden="true">☆</i></button>
+          <button type="button" data-rating="2" aria-label="2 分"><i data-lucide="star" aria-hidden="true">☆</i></button>
+          <button type="button" data-rating="3" aria-label="3 分"><i data-lucide="star" aria-hidden="true">☆</i></button>
+          <button type="button" data-rating="4" aria-label="4 分"><i data-lucide="star" aria-hidden="true">☆</i></button>
+          <button type="button" data-rating="5" aria-label="5 分"><i data-lucide="star" aria-hidden="true">☆</i></button>
+        </div>
+        <span class="rating-hint" id="ratingHint">请选择 1-5 分</span>
+      </fieldset>
+      <label class="review-notes">完成小结（可选）<textarea id="reviewInput" rows="4" maxlength="500" placeholder="记录掌握情况、遇到的问题或下一步安排…"></textarea></label>
+      <p class="review-error" id="reviewError" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="secondary-btn action-btn" id="cancelReviewBtn" type="button">取消</button>
+        <button class="confirm-btn" id="confirmReviewBtn" type="submit"><i data-lucide="check" aria-hidden="true">✓</i><span>确认完成</span></button>
+      </div>
+    </form>
+  </dialog>
+  <dialog class="confirm-dialog" id="confirmDialog">
+    <div class="confirm-dialog-body">
+      <span class="confirm-dialog-icon"><i data-lucide="triangle-alert" aria-hidden="true">!</i></span>
+      <div><h2 id="confirmTitle">确认操作</h2><p id="confirmMessage"></p></div>
+    </div>
+    <div class="dialog-actions">
+      <button class="secondary-btn action-btn" id="cancelConfirmBtn" type="button">取消</button>
+      <button class="confirm-btn danger-confirm" id="confirmActionBtn" type="button">确认删除</button>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="/static/app.js?v=2"></script>
+</body>
+</html>

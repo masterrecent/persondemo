@@ -1,0 +1,25 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# 密钥与本地配置：严禁提交
+.env
+.env.*
+
+# 本地运行产生的数据
+schedule.db
+*.db
+faiss_index/
+
+# 日志与草稿
+*.log
